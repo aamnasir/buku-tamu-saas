@@ -1,7 +1,7 @@
 {
   
-  "engines": {
-    "node": "18.x"
+    "engines": {
+    "node": "24.x"
   },
   "name": "buku-tamu-saas",
   "version": "0.1.0",
