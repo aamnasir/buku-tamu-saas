@@ -3,7 +3,7 @@ import { redirect } from "next/navigation"
 import VisitorsTable from "./visitors-table" // Import komponen tabel tadi
 
 export default async function DashboardPage() {
-  const supabase = await createClient()
+  const supabase = createClient()
 
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) redirect('/')
