@@ -136,9 +136,6 @@ export default function KioskPage() {
       <span className="text-[10px] opacity-50">(Pastikan akun memiliki School ID)</span>
     </div>
   )}
-
-
-  
             <p className="text-white/40 text-xs">Scan dengan kamera HP Anda</p>
           </div>
 
