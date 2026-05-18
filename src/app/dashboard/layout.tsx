@@ -1,6 +1,7 @@
 import { createClient } from '../../lib/supabase/server'
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
+import Sidebar from './sidebar'
 
 export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
   const supabase = createClient()
@@ -13,7 +14,9 @@ export default async function DashboardLayout({ children }: { children: React.Re
   if (profile?.role !== 'admin') {
     redirect('/kiosk')
   }
-
+// Gunakan komponen Sidebar yang berisi logika buka/tutup
+  return <Sidebar>{children}</Sidebar>
+}
   return (
     // ... kode sidebar dan children tetap sama seperti sebelumnya ...
     <div className="min-h-screen bg-cream flex">
