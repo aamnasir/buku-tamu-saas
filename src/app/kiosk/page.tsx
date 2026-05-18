@@ -1,5 +1,5 @@
 'use client'
-
+import { QRCodeSVG } from 'qrcode.react'
 import { createClient } from '../../lib/supabase/client'
 import { useState, useEffect, useRef } from 'react'
 import { useRouter } from 'next/navigation'
@@ -120,17 +120,23 @@ export default function KioskPage() {
         <div className="text-center max-w-md mx-auto w-full animate-fade-in">
           <h1 className="text-5xl font-heading font-900 mb-3 drop-shadow-lg">Selamat Datang</h1>
           <p className="text-white/50 text-lg mb-8">Silakan scan QR code atau tekan tombol untuk check-in</p>
-          {/* QR Code Dinamis via API */}
+          {/* QR Code Dinamis */}
 <div className="w-64 h-64 bg-white rounded-2xl mx-auto mb-4 flex items-center justify-center p-4 shadow-2xl border-4 border-white/50">
   {qrUrl ? (
-    <img 
-      src={`https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=${encodeURIComponent(qrUrl)}`} 
-      alt="QR Code Check-in" 
-      className="w-full h-full object-contain"
+    <QRCodeSVG 
+      value={qrUrl} 
+      size={220} 
+      bgColor="#ffffff" 
+      fgColor="#0C3B2E" 
+      level="H" 
     />
   ) : (
-    <div className="text-primary text-xs animate-pulse text-center">Memuat QR Code...</div>
+    <div className="text-primary text-xs animate-pulse text-center px-4">
+      Memuat QR Code...<br/>
+      <span className="text-[10px] opacity-50">(Pastikan akun memiliki School ID)</span>
+    </div>
   )}
+
 
   
             <p className="text-white/40 text-xs">Scan dengan kamera HP Anda</p>
