@@ -1,5 +1,6 @@
 'use client'
 
+import { QRCodeSVG } from 'qrcode.react'
 import { createClient } from '../../lib/supabase/client'
 import { useState, useEffect, useRef } from 'react'
 import { useRouter } from 'next/navigation'
@@ -114,9 +115,20 @@ export default function KioskPage() {
         <div className="text-center max-w-md mx-auto w-full animate-fade-in">
           <h1 className="text-5xl font-heading font-900 mb-3 drop-shadow-lg">Selamat Datang</h1>
           <p className="text-white/50 text-lg mb-8">Silakan scan QR code atau tekan tombol untuk check-in</p>
-          
-          <div className="kiosk-card p-8 mb-6 inline-block">
-            <div className="w-48 h-48 bg-white rounded-xl mx-auto mb-3 flex items-center justify-center border-4 border-white/50 shadow-2xl">
+          {/* QR Code Dinamis */}
+<div className="w-52 h-52 bg-white rounded-xl mx-auto mb-3 flex items-center justify-center border-4 border-white/50 shadow-2xl p-2">
+  {schoolId ? (
+    <QRCodeSVG 
+      value={`${typeof window !== 'undefined' ? window.location.origin : ''}/checkin?school_id=${schoolId}`} 
+      size={180} 
+      bgColor="#ffffff" 
+      fgColor="#0C3B2E" 
+      level="M"
+      includeMargin={false}
+    />
+  ) : (
+    <span className="text-primary text-xs animate-pulse">Memuat QR...</span>
+  )}<div className="w-48 h-48 bg-white rounded-xl mx-auto mb-3 flex items-center justify-center border-4 border-white/50 shadow-2xl">
               <div className="text-center text-primary">
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-16 w-16 mx-auto mb-2 opacity-20" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z" /></svg>
                 <span className="text-xs font-bold opacity-30">SCAN QR</span>
