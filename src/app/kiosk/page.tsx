@@ -13,6 +13,12 @@ export default function KioskPage() {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   
   const [schoolId, setSchoolId] = useState<string | null>(null)
+  const [qrUrl, setQrUrl] = useState('')
+    useEffect(() => {
+  if (schoolId && typeof window !== 'undefined') {
+    setQrUrl(`${window.location.origin}/checkin?school_id=${schoolId}`)
+  }
+}, [schoolId])
   const [loading, setLoading] = useState(false)
   const [screen, setScreen] = useState<'idle' | 'form' | 'success' | 'blacklist'>('idle')
   const [isOnline, setIsOnline] = useState(true)
@@ -128,12 +134,21 @@ export default function KioskPage() {
     />
   ) : (
     <span className="text-primary text-xs animate-pulse">Memuat QR...</span>
-  )}<div className="w-48 h-48 bg-white rounded-xl mx-auto mb-3 flex items-center justify-center border-4 border-white/50 shadow-2xl">
-              <div className="text-center text-primary">
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-16 w-16 mx-auto mb-2 opacity-20" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z" /></svg>
-                <span className="text-xs font-bold opacity-30">SCAN QR</span>
-              </div>
-            </div>
+  )}
+  {/* QR Code Dinamis */}
+<div className="w-64 h-64 bg-white rounded-2xl mx-auto mb-4 flex items-center justify-center p-4 shadow-2xl border-4 border-white/50">
+  {qrUrl ? (
+    <QRCodeSVG 
+      value={qrUrl} 
+      size={220} 
+      bgColor="#ffffff" 
+      fgColor="#0C3B2E" 
+      level="M"
+    />
+  ) : (
+    <div className="text-primary text-xs animate-pulse text-center">Memuat QR Code...</div>
+  )}
+</div>
             <p className="text-white/40 text-xs">Scan dengan kamera HP Anda</p>
           </div>
 

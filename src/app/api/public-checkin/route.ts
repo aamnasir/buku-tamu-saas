@@ -14,7 +14,7 @@ export async function POST(req: Request) {
     process.env.SUPABASE_SERVICE_ROLE_KEY!
   )
 
-  // Cek Blacklist terlebih dahulu
+  // Cek Blacklist
   const { data: blData } = await supabaseAdmin
     .from('blacklist')
     .select('id')
@@ -26,7 +26,7 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "PENGUNJUNG_BLACKLIST" }, { status: 403 })
   }
 
-  // Insert data pengunjung
+  // Insert data
   const { error } = await supabaseAdmin.from('visitors').insert({
     school_id,
     full_name,
@@ -34,7 +34,7 @@ export async function POST(req: Request) {
     category: category || 'other',
     purpose: purpose || 'other',
     target_staff: target_staff || '-',
-    check_in_type: 'self_scan' // Tipe baru: check-in mandiri via HP
+    check_in_type: 'self_scan'
   })
 
   if (error) return NextResponse.json({ error: error.message }, { status: 400 })
