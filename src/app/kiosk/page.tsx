@@ -1,6 +1,5 @@
 'use client'
 
-import { QRCodeSVG } from 'qrcode.react'
 import { createClient } from '../../lib/supabase/client'
 import { useState, useEffect, useRef } from 'react'
 import { useRouter } from 'next/navigation'
@@ -121,34 +120,10 @@ export default function KioskPage() {
         <div className="text-center max-w-md mx-auto w-full animate-fade-in">
           <h1 className="text-5xl font-heading font-900 mb-3 drop-shadow-lg">Selamat Datang</h1>
           <p className="text-white/50 text-lg mb-8">Silakan scan QR code atau tekan tombol untuk check-in</p>
-          {/* QR Code Dinamis */}
-<div className="w-52 h-52 bg-white rounded-xl mx-auto mb-3 flex items-center justify-center border-4 border-white/50 shadow-2xl p-2">
-  {schoolId ? (
-    <QRCodeSVG 
-      value={`${typeof window !== 'undefined' ? window.location.origin : ''}/checkin?school_id=${schoolId}`} 
-      size={180} 
-      bgColor="#ffffff" 
-      fgColor="#0C3B2E" 
-      level="M"
-      includeMargin={false}
-    />
-  ) : (
-    <span className="text-primary text-xs animate-pulse">Memuat QR...</span>
-  )}
-  {/* QR Code Dinamis */}
-<div className="w-64 h-64 bg-white rounded-2xl mx-auto mb-4 flex items-center justify-center p-4 shadow-2xl border-4 border-white/50">
-  {qrUrl ? (
-    <QRCodeSVG 
-      value={qrUrl} 
-      size={220} 
-      bgColor="#ffffff" 
-      fgColor="#0C3B2E" 
-      level="M"
-    />
-  ) : (
-    <div className="text-primary text-xs animate-pulse text-center">Memuat QR Code...</div>
-  )}
-</div>
+          <div className="inline-block p-4 bg-white/10 border border-white/20 rounded-xl shadow-lg">
+            {qrUrl ? <img src={`https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(qrUrl)}`} alt="QR Code" className="w-40 h-40" /> : <div className="w-40 h-40 bg-white/20 animate-pulse rounded-xl"></div>}     
+  
+  
             <p className="text-white/40 text-xs">Scan dengan kamera HP Anda</p>
           </div>
 
