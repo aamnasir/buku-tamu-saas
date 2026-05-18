@@ -16,14 +16,12 @@ function CheckinForm() {
   const [loading, setLoading] = useState(false)
   const [screen, setScreen] = useState<'form' | 'success' | 'blacklist'>('form')
   
-  // Form State
   const [name, setName] = useState('')
   const [identity, setIdentity] = useState('')
   const [category, setCategory] = useState('parent')
   const [purpose, setPurpose] = useState('meeting')
   const [targetStaff, setTargetStaff] = useState('')
   
-  // Camera State
   const [cameraActive, setCameraActive] = useState(false)
   const [cameraError, setCameraError] = useState(false)
   const [photoData, setPhotoData] = useState<string | null>(null)
@@ -38,24 +36,16 @@ function CheckinForm() {
     }
   }, [schoolId, supabase])
 
-  // Cleanup camera on unmount
   useEffect(() => {
     return () => { stopCamera() }
   }, [])
 
-  // ===== CAMERA LOGIC =====
   const startCamera = async () => {
     setCameraError(false)
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user', width: 320, height: 240 } })
-      if (videoRef.current) {
-        videoRef.current.srcObject = stream
-        setCameraActive(true)
-      }
-    } catch (err) {
-      setCameraError(true)
-      setCameraActive(false)
-    }
+      if (videoRef.current) { videoRef.current.srcObject = stream; setCameraActive(true) }
+    } catch (err) { setCameraError(true); setCameraActive(false) }
   }
 
   const capturePhoto = () => {
@@ -69,16 +59,38 @@ function CheckinForm() {
     }
   }
 
-  const retakePhoto = () => {
-    setPhotoData(null)
-    startCamera()
-  }
+  const retakePhoto = () => { setPhotoData(null); startCamera() }
 
   const stopCamera = () => {
     if (videoRef.current && videoRef.current.srcObject) {
       const stream = videoRef.current.srcObject as MediaStream
       stream?.getTracks().forEach(track => track.stop())
       setCameraActive(false)
+    }
+  }
+
+  // ===== WHATSAPP NOTIFICATION HELPER =====
+  const sendWhatsApp = async (sId: string, type: string, vName: string, vIdentity: string, vCategory: string) => {
+    try {
+      const { data: schoolData } = await supabase.from('schools').select('notification_phone, notify_blacklist, notify_vip').eq('id', sId).single()
+      if (!schoolData?.notification_phone) return
+      if (type === "ALERT_BLACKLIST" && !schoolData.notify_blacklist) return
+      if (type === "CHECKIN_VIP" && !schoolData.notify_vip) return
+
+      let message = ""
+      if (type === "ALERT_BLACKLIST") {
+        message = `🚨 *ALERT KEAMANAN*\nPengunjung di daftar pembatasan mencoba check-in!\n\n👤 Nama: ${vName}\n🪪 Identitas: ${vIdentity}\n⏰ Waktu: ${new Date().toLocaleString('id-ID')}\n\nHarap segera ditindaklanjuti oleh Security.`
+      } else {
+        message = `🔔 *Tamu Penting Check-in*\n\n👤 Nama: ${vName}\n📁 Kategori: ${vCategory}\n⏰ Waktu: ${new Date().toLocaleString('id-ID')}\n\nMohon persiapan ruangan jika diperlukan.`
+      }
+
+      await fetch('/api/send-whatsapp', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ target_phone: schoolData.notification_phone, message })
+      })
+    } catch (err) {
+      console.error("Gagal kirim WA:", err)
     }
   }
 
@@ -108,11 +120,15 @@ function CheckinForm() {
       if (!res.ok) {
         if (result.error === "PENGUNJUNG_BLACKLIST") {
           setScreen('blacklist')
+          sendWhatsApp(schoolId, "ALERT_BLACKLIST", name, identity, category)
         } else {
           alert("Gagal check-in: " + (result.error || "Terjadi kesalahan"))
         }
       } else {
         setScreen('success')
+        if (category === 'government' || category === 'student_candidate' || category === 'media') {
+          sendWhatsApp(schoolId, "CHECKIN_VIP", name, identity, category)
+        }
       }
     } catch (err) {
       alert("Gagal menghubungi server. Cek koneksi internet Anda.")
@@ -136,8 +152,14 @@ function CheckinForm() {
           <div className="kiosk-card p-6 sm:p-8">
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div><label className="text-white/60 text-xs block mb-1">Nama Lengkap *</label><input type="text" required value={name} onChange={(e) => setName(e.target.value)} className="w-full p-3 rounded-xl bg-white/10 border border-white/20 text-white placeholder-white/30 focus:outline-none focus:border-accent" placeholder="Nama sesuai KTP" /></div>
-                <div><label className="text-white/60 text-xs block mb-1">No. Identitas (KTP/SIM) *</label><input type="text" required value={identity} onChange={(e) => setIdentity(e.target.value)} className="w-full p-3 rounded-xl bg-white/10 border border-white/20 text-white placeholder-white/30 focus:outline-none focus:border-accent" placeholder="Nomor identitas" /></div>
+                <div>
+                  <label className="text-white/60 text-xs block mb-1">Nama Lengkap *</label>
+                  <input type="text" required value={name} onChange={(e) => setName(e.target.value)} className="w-full p-3 rounded-xl bg-white/10 border border-white/20 text-white placeholder-white/30 focus:outline-none focus:border-accent" placeholder="Nama sesuai KTP" />
+                </div>
+                <div>
+                  <label className="text-white/60 text-xs block mb-1">No. Identitas (KTP/SIM) *</label>
+                  <input type="text" required value={identity} onChange={(e) => setIdentity(e.target.value)} className="w-full p-3 rounded-xl bg-white/10 border border-white/20 text-white placeholder-white/30 focus:outline-none focus:border-accent" placeholder="Nomor identitas" />
+                </div>
                 <div>
                   <label className="text-white/60 text-xs block mb-1">Kategori *</label>
                   <select value={category} onChange={(e) => setCategory(e.target.value)} className="w-full p-3 rounded-xl bg-white/10 border border-white/20 text-white">
@@ -193,7 +215,7 @@ function CheckinForm() {
                         <i className="fas fa-redo mr-1"></i> Ulangi
                       </button>
                     )}
-                    {cameraError && <p className="text-red-400 text-[10px] italic">Kamera ditolak/browser tidak support.</p>}
+                    {cameraError && <p className="text-red-400 text-[10px] italic">Kamera ditolak.</p>}
                   </div>
                 </div>
               </div>
@@ -233,7 +255,7 @@ function CheckinForm() {
         </div>
       )}
     </div>
-  )
+  );
 }
 
 export default function CheckinPage() {

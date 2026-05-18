@@ -14,6 +14,7 @@ export default function Sidebar({ children }: { children: React.ReactNode }) {
     { href: '/dashboard/appointments', label: '📅 Appointment' },
     { href: '/dashboard/reports', label: '📄 Laporan & Export' },
     { href: '/dashboard/staff', label: '👥 Kelola Staff' },
+    { href: '/dashboard/settings', label: '⚙️ Pengaturan' },
     { href: '/kiosk', label: '📱 Mode Kiosk' },
   ]
 
