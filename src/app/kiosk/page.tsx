@@ -120,9 +120,18 @@ export default function KioskPage() {
         <div className="text-center max-w-md mx-auto w-full animate-fade-in">
           <h1 className="text-5xl font-heading font-900 mb-3 drop-shadow-lg">Selamat Datang</h1>
           <p className="text-white/50 text-lg mb-8">Silakan scan QR code atau tekan tombol untuk check-in</p>
-          <div className="inline-block p-4 bg-white/10 border border-white/20 rounded-xl shadow-lg">
-            {qrUrl ? <img src={`https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(qrUrl)}`} alt="QR Code" className="w-40 h-40" /> : <div className="w-40 h-40 bg-white/20 animate-pulse rounded-xl"></div>}     
-  
+          {/* QR Code Dinamis via API */}
+<div className="w-64 h-64 bg-white rounded-2xl mx-auto mb-4 flex items-center justify-center p-4 shadow-2xl border-4 border-white/50">
+  {qrUrl ? (
+    <img 
+      src={`https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=${encodeURIComponent(qrUrl)}`} 
+      alt="QR Code Check-in" 
+      className="w-full h-full object-contain"
+    />
+  ) : (
+    <div className="text-primary text-xs animate-pulse text-center">Memuat QR Code...</div>
+  )}
+
   
             <p className="text-white/40 text-xs">Scan dengan kamera HP Anda</p>
           </div>
