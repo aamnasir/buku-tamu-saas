@@ -186,19 +186,22 @@ function CheckinForm() {
                 <input type="text" value={targetStaff} onChange={(e) => setTargetStaff(e.target.value)} className="w-full p-3 rounded-xl bg-white/10 border border-white/20 text-white placeholder-white/30 focus:outline-none focus:border-accent" placeholder="Contoh: Ibu Dewi - Ruang Guru" />
               </div>
 
-              {/* ===== WEBCAM SECTION ===== */}
+                            {/* ===== WEBCAM SECTION ===== */}
               <div>
                 <label className="text-white/60 text-xs block mb-2">Foto Pengunjung (Opsional)</label>
                 <div className="flex items-center gap-4">
-                  {cameraActive && !photoData ? (
-                    <video ref={videoRef} autoPlay playsInline className="w-36 h-28 rounded-xl object-cover border-2 border-white/20 shadow-lg bg-black/20"></video>
-                  ) : photoData ? (
-                    <img src={photoData} alt="Foto" className="w-24 h-24 rounded-xl object-cover border-2 border-white/40 shadow-lg" />
-                  ) : (
+                  {/* Video selalu dirender tapi di-hidden jika tidak aktif */}
+                  <video ref={videoRef} autoPlay playsInline className={`${cameraActive && !photoData ? '' : 'hidden'} w-36 h-28 rounded-xl object-cover border-2 border-white/20 shadow-lg bg-black/20`}></video>
+                  <canvas ref={canvasRef} className="hidden"></canvas>
+                  
+                  {photoData && <img src={photoData} alt="Foto" className="w-24 h-24 rounded-xl object-cover border-2 border-white/40 shadow-lg" />}
+                  
+                  {!cameraActive && !photoData && (
                     <div className="w-24 h-24 rounded-xl bg-white/5 border-2 border-dashed border-white/20 flex items-center justify-center">
                       <span className="text-white/20 text-xs text-center px-2">Belum ada foto</span>
                     </div>
                   )}
+
                   <div className="flex flex-col gap-2">
                     {!cameraActive && !photoData && (
                       <button type="button" onClick={startCamera} className="bg-white/10 border border-white/20 text-white text-xs px-4 py-2 rounded-lg cursor-pointer hover:bg-white/20 transition-colors">
@@ -215,7 +218,7 @@ function CheckinForm() {
                         <i className="fas fa-redo mr-1"></i> Ulangi
                       </button>
                     )}
-                    {cameraError && <p className="text-red-400 text-[10px] italic">Kamera ditolak.</p>}
+                    {cameraError && <p className="text-red-400 text-[10px] italic">Kamera ditolak/browser tidak support.</p>}
                   </div>
                 </div>
               </div>
